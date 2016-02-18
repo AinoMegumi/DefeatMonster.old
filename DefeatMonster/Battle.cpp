@@ -22,7 +22,8 @@ void command_message(bool print_in_kanji) {
 int choose_command(bool print_in_kanji) {
 	int cursole_point;
 	command_message(print_in_kanji);
-	cursole(3, 10, window_height - 80, cursole_point, GetColor(255, 255, 0), GetColor(128, 128, 128));
+	KeyState key;
+	key.cursole(3, 10, window_height - 80, cursole_point, GetColor(255, 255, 0), GetColor(128, 128, 128));
 	return cursole_point;
 }
 
@@ -155,7 +156,7 @@ void Battle::player_turn_command(StatusDataList &sta, Damage player_damage, COOR
 
 int Battle::battle_main(StatusDataList &sta, COORDINATE Status_graph) {
 	COORDINATE message_window = { message_window_x ,message_window_y, GetColor(255, 255, 255) };
-	this->partner1_strategy = partner2_strategy = 2;
+	this->partner1_strategy = partner2_strategy = strategy_type::balance;
 	if (turn == command) {
 		this->turn_count = 0;
 		this->command_cursole = 0;

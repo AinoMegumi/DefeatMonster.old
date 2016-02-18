@@ -128,7 +128,8 @@ enum TURN {
 
 class Battle : public Random {
 private:
-	int command_cursole, partner1_strategy, partner2_strategy;
+	int command_cursole;
+	strategy_type partner1_strategy, partner2_strategy;
 	int magic_sound_handle;
 	bool print_in_kanji, player_guard;
 	int damage;
