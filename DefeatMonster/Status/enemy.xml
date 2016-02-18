@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<characterdatabook>
+  <characterdata>
+    <name>サタン</name>
+    <graph>./Graphic/satan.png</graph>
+    <hp>14000</hp>
+    <mp>850</mp>
+    <attack>245</attack>
+    <defence>210</defence>
+    <magicattack>229</magicattack>
+    <magicdefence>200</magicdefence>
+    <speed>95</speed>
+  </characterdata>
+  <characterdata>
+    <name>ブラックドラゴン</name>
+    <graph>./Graphic/black_dragon.png</graph>
+    <hp>10000</hp>
+    <mp>700</mp>
+    <attack>271</attack>
+    <defence>200</defence>
+    <magicattack>213</magicattack>
+    <magicdefence>215</magicdefence>
+    <speed>89</speed>
+  </characterdata>
+</characterdatabook>

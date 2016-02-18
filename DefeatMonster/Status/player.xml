@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<characterdatabook>
+  <characterdata><!--バランス型-->
+    <hp>410</hp>
+    <mp>158</mp>
+    <attack>189</attack>
+    <defence>177</defence>
+    <magicattack>189</magicattack>
+    <magicdefence>177</magicdefence>
+    <speed>90</speed>
+  </characterdata>
+  <characterdata>
+    <!--ウォーリア-->
+    <hp>495</hp>
+    <mp>81</mp>
+    <attack>224</attack>
+    <defence>189</defence>
+    <magicattack>104</magicattack>
+    <magicdefence>165</magicdefence>
+    <speed>76</speed>
+  </characterdata>
+  <characterdata><!--ウィザード-->
+    <hp>368</hp>
+    <mp>255</mp>
+    <attack>142</attack>
+    <defence>140</defence>
+    <magicattack>217</magicattack>
+    <magicdefence>186</magicdefence>
+    <speed>110</speed>
+  </characterdata>
+  <characterdata><!--クレリック-->
+    <hp>400</hp>
+    <mp>194</mp>
+    <attack>173</attack>
+    <defence>176</defence>
+    <magicattack>174</magicattack>
+    <magicdefence>179</magicdefence>
+    <speed>128</speed>
+  </characterdata>
+</characterdatabook>
