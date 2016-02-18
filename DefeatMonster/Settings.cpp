@@ -43,7 +43,7 @@ std::string get_player_name(bool print_in_kanji, uint draw_string_color) {
 		print_in_kanji ? "名前を入力してください(最大全角５文字　半角１０文字)"
 		: "なまえをおしえてね(ひらがな、カタカナ、かんじで５もじ、アルファベット、すうじで１０もじまで)",
 		draw_string_color);
-	ScreenFlip();
+	//ScreenFlip();//Before calling KeyInputString(), YOU MUST NOT CALL ScreenFlip().
 	return get_string(5);
 }
 
