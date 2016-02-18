@@ -37,12 +37,12 @@ void Battle::enemy_attack(Status &target, Status &enemy, bool do_guard, COORDINA
 	bool flag = false;
 	if (rand(this->make_mt())) {
 		msg.attack();
-		damage = Damage(enemy.attack, target.defence, 0, do_guard).calc(attack_type_normal, 0);
+		damage = Damage(enemy.attack, target.defence, 0, do_guard).calc(attack_type::normal, 0);
 	}
 	else {
 		msg.magic_attack("サンダーボルト", this->magic_sound_handle);
 		if (enemy.mp >= 10) {
-			damage = Damage(enemy.magic_attack, target.magic_defence, 0, this->player_guard).calc(attack_type_skill, 0);
+			damage = Damage(enemy.magic_attack, target.magic_defence, 0, this->player_guard).calc(attack_type::skill, 0);
 			enemy.mp -= 10;
 		}
 		else {
@@ -122,13 +122,13 @@ void Battle::player_turn_command(StatusDataList &sta, Damage player_damage, COOR
 	switch (command_cursole) {
 		case 0:
 			msg.attack();
-			damage = player_damage.calc(attack_type_normal, 0);
+			damage = player_damage.calc(attack_type::normal, 0);
 			break;
 		case 1:
 			msg.magic_attack("アイスニードル", this->magic_sound_handle);
 			
 			if (sta.player.mp >= 5) {
-				damage = player_damage.calc(attack_type_skill, 40);
+				damage = player_damage.calc(attack_type::skill, 40);
 				sta.player.mp -= 5;
 			}
 			else {
@@ -138,7 +138,7 @@ void Battle::player_turn_command(StatusDataList &sta, Damage player_damage, COOR
 			break;
 		case 2:
 			msg.skill_attack("かえんぎり");
-			damage = player_damage.calc(attack_type_skill, 40);
+			damage = player_damage.calc(attack_type::skill, 40);
 			break;
 		case 3:
 			player_carel(sta, message_window, msg);

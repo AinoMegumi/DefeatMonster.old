@@ -32,12 +32,12 @@ void Strategy::attack_importance(Status &user, Status &target) {
 	std::uniform_int_distribution<int> rand(1, abs(user.attack - user.magic_attack));
 	if ((user.attack + rand(this->make_mt()) < user.magic_attack + rand(this->make_mt())) && user.mp >= 7) {
 		msg.magic_attack(magic_name.c_str(), this->magic_sound_handle);
-		this->damage = Damage(user.magic_attack, target.magic_defence, 0, false).calc(attack_type_skill, 40);
+		this->damage = Damage(user.magic_attack, target.magic_defence, 0, false).calc(attack_type::skill, 40);
 		user.mp -= 7;
 	}
 	else {
 		msg.attack();
-		this->damage = Damage(user.attack, target.defence, 10, false).calc(attack_type_normal, 0);
+		this->damage = Damage(user.attack, target.defence, 10, false).calc(attack_type::normal, 0);
 	}
 }
 
@@ -67,23 +67,23 @@ void Strategy::cure_importance(Status &player, Status &user, Status &other_partn
 	else attack_importance(user, enemy);
 }
 
-void Strategy::partner_command(int strategy_type, Status &player, Status &user, Status &other_partner, Status &enemy) {
+void Strategy::partner_command(strategy_type strategy_type, Status &player, Status &user, Status &other_partner, Status &enemy) {
 	Message msg(user.name, enemy.name, this->print_in_kanji, this->message_window);
 	switch (strategy_type) {
-		case 1:
-			this->attack_importance(user, enemy);
-			msg.damage_to_enemy(this->damage);
-			break;
-		case 2:
-			this->balance(player, user, other_partner, enemy);
-			if(this->damage != -1) msg.damage_to_enemy(this->damage);
-			break;
-		case 3:
-			this->cure_importance(player, user, other_partner, enemy);
-			if (this->damage != -1) msg.damage_to_enemy(this->damage);
-			break;
-		default:
-			throw std::runtime_error("partner command error");
+	case strategy_type::attack:
+		this->attack_importance(user, enemy);
+		msg.damage_to_enemy(this->damage);
+		break;
+	case strategy_type::balance:
+		this->balance(player, user, other_partner, enemy);
+		if(this->damage != -1) msg.damage_to_enemy(this->damage);
+		break;
+	case strategy_type::cure:
+		this->cure_importance(player, user, other_partner, enemy);
+		if (this->damage != -1) msg.damage_to_enemy(this->damage);
+		break;
+	default:
+		throw std::runtime_error("partner command error");
 	}
 	if(this->damage != -1) enemy.hp = std::max(enemy.hp - this->damage, 0);
 }
