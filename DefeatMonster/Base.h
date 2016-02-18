@@ -14,6 +14,10 @@ constexpr uint strategy_type_attack = 1;
 constexpr uint strategy_type_balance = 2;
 constexpr uint strategy_type_cure = 3;
 
+inline int fill_background_color() {
+	static const uint color = DxLib::GetColor(153, 217, 234);
+	return DxLib::DrawBox(0, 0, window_width, window_height, color, true);
+}
 typedef struct {
 	int title, setting, battle, magic_chant, win, lose, battle_result;
 }Music;

@@ -166,7 +166,7 @@ public:
 	bool down() const noexcept;
 	bool decide() const noexcept;
 	static constexpr size_t keybufsize = 256;
-	int cursole(const dxle::graph2d::screen& back, cint max, cint x, cint y, uint cursole_color, uint back_color);
+	int cursole(const dxle::graph2d::screen& back, cint choise_size, cint x, cint y, uint cursole_color, uint back_color);
 private:
 	bool fllush_stream();
 	std::array<int, 256> KeyStateBuf;

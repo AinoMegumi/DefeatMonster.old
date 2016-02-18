@@ -47,7 +47,8 @@ std::string get_player_name(bool print_in_kanji, uint draw_string_color) {
 	return get_string(5);
 }
 
-void print_sex_check_message(bool print_in_kanji, int x, int y, cint color) {
+static void print_sex_check_message(bool print_in_kanji, int x, int y, cint color) {
+	fill_background_color();
 	if (print_in_kanji) {
 		DrawString(0, 0, "あなたは男性ですか？女性ですか？", color);
 		DrawString(x, y, "男性", color);
@@ -58,7 +59,6 @@ void print_sex_check_message(bool print_in_kanji, int x, int y, cint color) {
 		DrawString(x, y, "おとこのこ", color);
 		DrawString(x, y + 16, "おんなのこ", color);
 	}
-	ScreenFlip();
 }
 
 bool check_male(bool print_in_kanji, uint string_color) {
@@ -66,10 +66,11 @@ bool check_male(bool print_in_kanji, uint string_color) {
 	auto screen = dxle::graph2d::MakeScreen(window_width, window_height);
 	screen.drawn_on([print_in_kanji, string_color]() { print_sex_check_message(print_in_kanji, 16, 16, string_color); });
 	KeyState key;
-	return 0 == key.cursole(screen, 1, 0, 16, GetColor(255, 255, 0), GetColor(160, 216, 239));
+	return 0 == key.cursole(screen, 2, 0, 16, GetColor(255, 255, 0), GetColor(160, 216, 239));
 }
 
 void print_partner_list(std::vector<status_data> arr, int choosen_character_num, bool print_in_kanji, cint string_color) {
+	fill_background_color();
 	int t = 0;
 	uint string_color2 = GetColor(255, 0, 255);
 	DrawString(0, 0, print_in_kanji ? "パートナーを選択してください" : "パートナーをえらんでね", string_color);

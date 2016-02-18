@@ -10,18 +10,25 @@ int end_check(StatusDataList sta) {
 }
 
 void command_message(bool print_in_kanji) {
+	fill_background_color();
 	DrawBox(1, window_height - 82, 135, window_height - 14, GetColor(128, 128, 128), TRUE);
 	DrawBox(1, window_height - 82, 135, window_height - 14, GetColor(255, 255, 255), FALSE);
 	DrawString(32, window_height - 80, print_in_kanji ? "攻撃" : "こうげき", GetColor(0, 0, 0));
 	DrawString(32, window_height - 64, print_in_kanji ? "魔法" : "まほう", GetColor(0, 0, 0));
 	DrawString(32, window_height - 48, print_in_kanji ? "特技" : "とくぎ", GetColor(0, 0, 0));
 	DrawString(32, window_height - 32, "ケアルリング", GetColor(0, 0, 0));
-	ScreenFlip();
 }
 
 int choose_command(bool print_in_kanji) {
 	auto screen = dxle::screen::MakeScreen(window_width, window_height);
-	screen.drawn_on([print_in_kanji]() { command_message(print_in_kanji); });
+	screen.drawn_on([print_in_kanji]() { 
+		//うまくいかない
+		//int tmp = DxLib::MakeScreen(window_width, window_height);
+		//DxLib::BltDrawValidGraph(DX_SCREEN_FRONT, 0, 0, window_width, window_height, 0, 0, tmp);
+		//DxLib::DrawGraph(0, 0, tmp, false);
+		//DxLib::DeleteGraph(tmp);
+		command_message(print_in_kanji); 
+	});
 	KeyState key;
 	return key.cursole(screen, 3, 10, window_height - 80, GetColor(255, 255, 0), GetColor(128, 128, 128));
 }

@@ -6,6 +6,7 @@
 #include <thread>
 #include <chrono>
 #include <vector>
+#include <algorithm>
 
 KeyState::KeyState() noexcept : KeyStateBuf() {
 	this->fllush_stream();
@@ -80,18 +81,23 @@ int KeyState::cursole(const dxle::graph2d::screen& back, cint choise_size, cint 
 	screens.reserve(choise_size);
 	for (int i = 0; i < choise_size; ++i) {
 		screens.push_back(std::move(dxle::MakeScreen(window_width, window_height).drawn_on([&back, choise_size, i, x, y, cursole_color, back_color]() {
-			back.DrawGraph({}, false);
+			back.DrawGraph({}, true);
 			for (int j = 0; j < choise_size; ++j) {
 				DxLib::DrawBox(x, j * 16 + y, x + 16, (j + 1) * 16 + y, (i == j) ? cursole_color : back_color, true);
 			}
 		})));
 	}
+	assert(screens.size() == choise_size);
 	int cur;
+	screens.front().DrawGraph({}, true);
+	is_normal_state = normal_con_f();
 	for (cur = 0; (is_normal_state = -1 != ProcessMessage()) && update() && !decide();) {
 		if (up() || down()) {
-			if (up() && cur != 0) cur--;
-			if (down() && cur != choise_size) cur++;
-			screens[cur].DrawGraph({}, false);
+			if (up()) cur--;
+			if (down()) cur++;
+			fllush();
+			cur = std::max(0, std::min(choise_size - 1, cur));
+			screens[cur].DrawGraph({}, true);
 			is_normal_state = normal_con_f();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
