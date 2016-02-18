@@ -20,11 +20,10 @@ void command_message(bool print_in_kanji) {
 }
 
 int choose_command(bool print_in_kanji) {
-	int cursole_point;
-	command_message(print_in_kanji);
+	auto screen = dxle::screen::MakeScreen(window_width, window_height);
+	screen.drawn_on([print_in_kanji]() { command_message(print_in_kanji); });
 	KeyState key;
-	key.cursole(3, 10, window_height - 80, cursole_point, GetColor(255, 255, 0), GetColor(128, 128, 128));
-	return cursole_point;
+	return key.cursole(screen, 3, 10, window_height - 80, GetColor(255, 255, 0), GetColor(128, 128, 128));
 }
 
 static void safe_degree(int& re, int target) {

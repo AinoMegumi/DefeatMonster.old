@@ -32,7 +32,7 @@ int check_print_in_kanji() {
 
 std::string get_string(size_t max_letter_num) {
 	std::string re(max_letter_num * 2 + 1, '\0');
-	KeyInputString(0, 16, max_letter_num * 2 + 1, &re[0], FALSE);
+	KeyInputString(0, 16, static_cast<int>(max_letter_num * 2 + 1), &re[0], FALSE);
 	re.resize(DxLib::strlenDx(re.c_str()));
 	return re;
 }
@@ -63,15 +63,13 @@ void print_sex_check_message(bool print_in_kanji, int x, int y, cint color) {
 
 bool check_male(bool print_in_kanji, uint string_color) {
 	ClearDrawScreen();
-	int cursole_point;
-	print_sex_check_message(print_in_kanji, 16, 16, string_color);
+	auto screen = dxle::graph2d::MakeScreen(window_width, window_height);
+	screen.drawn_on([print_in_kanji, string_color]() { print_sex_check_message(print_in_kanji, 16, 16, string_color); });
 	KeyState key;
-	key.cursole(1, 0, 16, cursole_point, GetColor(255, 255, 0), GetColor(160, 216, 239));
-	return cursole_point == 0;
+	return 0 == key.cursole(screen, 1, 0, 16, GetColor(255, 255, 0), GetColor(160, 216, 239));
 }
 
 void print_partner_list(std::vector<status_data> arr, int choosen_character_num, bool print_in_kanji, cint string_color) {
-	ClearDrawScreen();
 	int t = 0;
 	uint string_color2 = GetColor(255, 0, 255);
 	DrawString(0, 0, print_in_kanji ? "パートナーを選択してください" : "パートナーをえらんでね", string_color);
@@ -91,11 +89,11 @@ void print_partner_list(std::vector<status_data> arr, int choosen_character_num,
 }
 
 void choose_partner_num(std::vector<status_data> arr, cint string_color, bool print_in_kanji, int &partner_num, int choosen_partner_num = -1) {
-	int cursole_point;
-	print_partner_list(arr, choosen_partner_num, print_in_kanji, string_color);
+	auto screen = dxle::graph2d::MakeScreen(window_width, window_height);
+	screen.drawn_on([&arr, choosen_partner_num, print_in_kanji, string_color]() { print_partner_list(arr, choosen_partner_num, print_in_kanji, string_color); });
 	KeyState key;
-	key.cursole(choosen_partner_num == -1 ? static_cast<int>(arr.size() - 1) : static_cast<int>(arr.size() - 2), 0, 16, cursole_point, GetColor(255, 255, 0), GetColor(160, 216, 239));
-	partner_num = cursole_point;
+	const int choose_num = choosen_partner_num == -1 ? static_cast<int>(arr.size() - 1) : static_cast<int>(arr.size() - 2);
+	partner_num = key.cursole(screen, choose_num, 0, 16, GetColor(255, 255, 0), GetColor(160, 216, 239));
 }
 
 void choose_partner(std::vector<status_data> arr, int &partner1, int &partner2, const DWORD string_color, bool print_in_kanji) {

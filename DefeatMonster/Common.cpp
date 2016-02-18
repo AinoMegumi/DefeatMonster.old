@@ -5,6 +5,7 @@
 #include <limits>
 #include <thread>
 #include <chrono>
+#include <vector>
 
 KeyState::KeyState() noexcept : KeyStateBuf() {
 	this->fllush_stream();
@@ -68,18 +69,34 @@ bool operator!=(const KeyState& l, size_t r) {
 	return 0 == l[r];
 }
 
-void KeyState::cursole(cint max, cint x, cint y, int &cursole_point, uint cursole_color, uint back_color) {
-	int cur = 0;
-	auto normal_con_f = []() ->bool { return -1 != ProcessMessage(); };
-	volatile bool is_normal_state;
-	while (is_normal_state = normal_con_f() && update() && !decide()) {
-		if (up() && cur != 0) cur--;
-		if (down() && cur != max) cur++;
-		DrawBox(x, y, x + 16, (max + 1) * 16 + y, back_color, TRUE);
-		DrawBox(x, cur * 16 + y, x + 16, (cur + 1) * 16 + y, cursole_color, TRUE);
+int KeyState::cursole(const dxle::graph2d::screen& back, cint choise_size, cint x, cint y, uint cursole_color, uint back_color) {
+	auto normal_con_f = []() ->bool {
+		bool re = -1 != ProcessMessage() && 0 == ScreenFlip() && 0 == ClearDrawScreen();
+		if (!re) throw std::runtime_error("ProcessMessage() return -1.");
+		return re;
+	};
+	bool is_normal_state = normal_con_f();
+	std::vector<dxle::graph2d::screen> screens;
+	screens.reserve(choise_size);
+	for (int i = 0; i < choise_size; ++i) {
+		screens.push_back(std::move(dxle::MakeScreen(window_width, window_height).drawn_on([&back, choise_size, i, x, y, cursole_color, back_color]() {
+			back.DrawGraph({}, false);
+			for (int j = 0; j < choise_size; ++j) {
+				DxLib::DrawBox(x, j * 16 + y, x + 16, (j + 1) * 16 + y, (i == j) ? cursole_color : back_color, true);
+			}
+		})));
+	}
+	int cur;
+	for (cur = 0; (is_normal_state = -1 != ProcessMessage()) && update() && !decide();) {
+		if (up() || down()) {
+			if (up() && cur != 0) cur--;
+			if (down() && cur != choise_size) cur++;
+			screens[cur].DrawGraph({}, false);
+			is_normal_state = normal_con_f();
+		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 	if (!is_normal_state) throw std::runtime_error("");
-	cursole_point = cur;
+	return cur;
 }
 

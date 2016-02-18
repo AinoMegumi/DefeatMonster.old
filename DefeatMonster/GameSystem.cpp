@@ -134,7 +134,7 @@ StatusDataList all_settings(COORDINATE &GSize, bool print_in_kanji, int setting_
 
 	//“G
 	auto enemy_arr = read_xml_enemy_status_data();
-	std::uniform_int_distribution<int> rand(0, enemy_arr.size() - 1);
+	std::uniform_int_distribution<int> rand(0, static_cast<int>(enemy_arr.size()) - 1);
 	int rand_num = rand(Random::make_mt());
 	Status enemy(enemy_arr, rand_num, false);
 	COORDINATE status_graph = { 0, 0, black };
