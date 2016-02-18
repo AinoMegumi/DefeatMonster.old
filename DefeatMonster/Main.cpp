@@ -29,7 +29,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	bool print_in_kanji = check_print_in_kanji_num == 1;
 	//const time_t main_process_begin = time(NULL);
 	struct tm cu_time;
-	COORDINATE enemy_GSize, status_graph = { 10, 10, 0 };
+	COORDINATE enemy_GSize, status_graph = { 10, 10, 0 };//enemy_GSizeはenemy_introductionで値がセットされる
 	IniStream graph("./Graphic/graphic.ini"), music("./Sound/sound.ini");
 	Music MHandle;
 	all_music_setting(music, MHandle);

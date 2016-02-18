@@ -1,6 +1,5 @@
 #include"Class.h"
 #include"Common.h"
-
 Status::Status(std::vector<status_data> arr, int i, bool is_player_setting) {
 	this->name = arr[i].name;
 	this->graph_handle = LoadGraph(arr[i].graph_name.c_str());
@@ -32,9 +31,10 @@ int check_print_in_kanji() {
 }
 
 std::string get_string(size_t max_letter_num) {
-	char* temp = new char[max_letter_num * 2 + 1];
-	KeyInputString(0, 16, 11, temp, FALSE);
-	return std::string(temp);
+	std::string re(max_letter_num * 2 + 1, '\0');
+	KeyInputString(0, 16, max_letter_num * 2 + 1, &re[0], FALSE);
+	re.resize(DxLib::strlenDx(re.c_str()));
+	return re;
 }
 
 std::string get_player_name(bool print_in_kanji, uint draw_string_color) {
@@ -65,7 +65,8 @@ bool check_male(bool print_in_kanji, uint string_color) {
 	ClearDrawScreen();
 	int cursole_point;
 	print_sex_check_message(print_in_kanji, 16, 16, string_color);
-	cursole(1, 0, 16, cursole_point, GetColor(255, 255, 0), GetColor(160, 216, 239));
+	KeyState key;
+	key.cursole(1, 0, 16, cursole_point, GetColor(255, 255, 0), GetColor(160, 216, 239));
 	return cursole_point == 0;
 }
 
@@ -92,7 +93,8 @@ void print_partner_list(std::vector<status_data> arr, int choosen_character_num,
 void choose_partner_num(std::vector<status_data> arr, cint string_color, bool print_in_kanji, int &partner_num, int choosen_partner_num = -1) {
 	int cursole_point;
 	print_partner_list(arr, choosen_partner_num, print_in_kanji, string_color);
-	cursole(choosen_partner_num == -1 ? static_cast<int>(arr.size() - 1) : static_cast<int>(arr.size() - 2), 0, 16, cursole_point, GetColor(255, 255, 0), GetColor(160, 216, 239));
+	KeyState key;
+	key.cursole(choosen_partner_num == -1 ? static_cast<int>(arr.size() - 1) : static_cast<int>(arr.size() - 2), 0, 16, cursole_point, GetColor(255, 255, 0), GetColor(160, 216, 239));
 	partner_num = cursole_point;
 }
 

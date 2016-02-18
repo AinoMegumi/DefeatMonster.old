@@ -71,7 +71,7 @@ public:
 		this->critical_percentage = critical_percentage;
 		this->do_guard = do_guard;
 	}
-	int calc(int attack_type, int base_power);
+	int calc(attack_type attack_type, int base_power);
 };
 
 class Message {
@@ -119,7 +119,7 @@ public:
 		this->magic_name = magic_name;
 		this->magic_sound_handle = magic_sound_handle;
 	}
-	void partner_command(int strategy_type, Status &player, Status &user, Status &other_partner, Status &enemy);
+	void partner_command(strategy_type strategy_type, Status &player, Status &user, Status &other_partner, Status &enemy);
 };
 
 enum TURN {
@@ -128,7 +128,8 @@ enum TURN {
 
 class Battle : public Random {
 private:
-	int command_cursole, partner1_strategy, partner2_strategy;
+	int command_cursole;
+	strategy_type partner1_strategy, partner2_strategy;
 	int magic_sound_handle;
 	bool print_in_kanji, player_guard;
 	int damage;

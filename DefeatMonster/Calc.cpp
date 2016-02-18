@@ -19,8 +19,8 @@ int Damage::skill_attack(int base_power) {
 	return damage <= 0 ? rand(this->make_mt()) : std::min(damage, 999);
 }
 
-int Damage::calc(int attack_type, int base_power) {
-	if (attack_type == 1) return normal_attack();
-	else if (attack_type == 2) return skill_attack(base_power);
+int Damage::calc(attack_type attack_type, int base_power) {
+	if (attack_type == attack_type::normal) return normal_attack();
+	else if (attack_type == attack_type::skill) return skill_attack(base_power);
 	else return 0;
 }

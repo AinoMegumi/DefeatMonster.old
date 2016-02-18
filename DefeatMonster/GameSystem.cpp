@@ -1,7 +1,8 @@
 #include"Class.h"
 #include"Settings.h"
 #include"Storage.h"
-
+#include <thread>
+#include <chrono>
 auto rand_engine() {
 	std::random_device rnd;
 	std::vector<std::uint_least32_t> v(10);// 初期化用ベクタ
@@ -43,7 +44,7 @@ void opening_message(int GHandle) noexcept(false) {
 		DrawGraph(0, 0, GHandle, FALSE);
 		ScreenFlip();
 	}
-	WaitTimer(3000);
+	//WaitTimer(3000);
 	for (int i = 100; i >= 0 && -1 != ProcessMessage(); i--) {
 		ClearDrawScreen();
 		SetDrawBright(256 * i / 100, 256 * i / 100, 256 * i / 100);
@@ -54,19 +55,20 @@ void opening_message(int GHandle) noexcept(false) {
 }
 
 int title_graph(int GHandle) noexcept(false) {
-	char* KeyStateBuf = new char[256];
-	auto flag = []() {return -1 != ProcessMessage(); };
-	volatile bool is_normal_state;
-	while (is_normal_state = flag()) {
-		ClearDrawScreen();
-		DrawGraph(0, 0, GHandle, FALSE);
-		ScreenFlip();
-		GetHitKeyStateAll(KeyStateBuf);
-		if (KeyStateBuf[KEY_INPUT_SPACE] == 1)  break;
-		if (KeyStateBuf[KEY_INPUT_ESCAPE] == 1) return 1;
+	auto normal_con_f = []() {
+		bool re = -1 != ProcessMessage() && 0 == ScreenFlip() && 0 == ClearDrawScreen();
+		if (!re) throw std::runtime_error("ProcessMessage() return -1.");
+		return re;
+	};
+	KeyState key;
+	bool is_normal_state = normal_con_f();
+	DrawGraph(0, 0, GHandle, false);
+	is_normal_state = normal_con_f();
+	while ((is_normal_state = -1 != ProcessMessage()) && key.update() && !key.esc() && !key.decide()) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
-	delete KeyStateBuf;
-	ClearDrawScreen();
+	if (key.esc()) throw std::runtime_error("");
+	if (!is_normal_state) throw std::runtime_error("ProcessMessage() return -1.");
 	return 0;
 }
 
@@ -78,11 +80,11 @@ int opening(IniStream ini) noexcept(false) {
 	opening_message(GHandle[0]);
 	ClearDrawScreen();
 	SetDrawBright(255, 255, 255);
-	WaitTimer(1000);
+	//WaitTimer(1000);
 	return title_graph(GHandle[1]);
 }
 
-void enemy_introduction(Status enemy, COORDINATE status_graph, COORDINATE &GSize, bool print_in_kanji) {
+void enemy_introduction(Status enemy, const COORDINATE& status_graph, COORDINATE &GSize, bool print_in_kanji) {
 	ClearDrawScreen();
 	DrawString(status_graph.x, status_graph.y, print_in_kanji ? "今回の対戦相手はこちら" : "こんかいのあいてはこちら", status_graph.string_color);
 	if (print_in_kanji) DrawFormatString(status_graph.x, status_graph.y + (2 * 16), status_graph.string_color, "名前:%s", enemy.name.c_str());
@@ -127,7 +129,7 @@ StatusDataList all_settings(COORDINATE &GSize, bool print_in_kanji, int setting_
 	SetKeyInputStringColor2(DX_KEYINPSTRCOLOR_IME_CONV_WIN_BACK, white);//ＩＭＥ使用時の変換候補ウインドウの下地の色
 	SetKeyInputStringColor2(DX_KEYINPSTRCOLOR_IME_MODE_STR, black);//ＩＭＥ使用時の入力モード文字列の色(『全角ひらがな』等)
 	SetKeyInputStringColor2(DX_KEYINPSTRCOLOR_IME_MODE_STR_EDGE, black);//ＩＭＥ使用時の入力モード文字列の縁の色
-	COORDINATE graph = { 0, 0, GetColor(0, 0, 0) };
+	COORDINATE graph = { 0, 0, black };
 	PlaySoundMem(setting_music_handle, DX_PLAYTYPE_LOOP);
 
 	//敵
@@ -135,7 +137,8 @@ StatusDataList all_settings(COORDINATE &GSize, bool print_in_kanji, int setting_
 	std::uniform_int_distribution<int> rand(0, enemy_arr.size() - 1);
 	int rand_num = rand(Random::make_mt());
 	Status enemy(enemy_arr, rand_num, false);
-	enemy_introduction(enemy, { 0, 0, GetColor(0, 0, 0) }, GSize, print_in_kanji);
+	COORDINATE status_graph = { 0, 0, black };
+	enemy_introduction(enemy, status_graph, GSize, print_in_kanji);
 	//プレイヤー
 	std::string player_name = get_player_name(print_in_kanji, black);
 	bool is_male = check_male(print_in_kanji, black);

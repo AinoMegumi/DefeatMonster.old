@@ -1,8 +1,10 @@
 #include"Class.h"
-#include<limits>
 #ifdef max
 #undef max
 #endif
+#include <limits>
+#include <thread>
+#include <chrono>
 
 KeyState::KeyState() noexcept : KeyStateBuf() {
 	this->fllush_stream();
@@ -70,33 +72,14 @@ void KeyState::cursole(cint max, cint x, cint y, int &cursole_point, uint cursol
 	int cur = 0;
 	auto normal_con_f = []() ->bool { return -1 != ProcessMessage(); };
 	volatile bool is_normal_state;
-	while (is_normal_state = normal_con_f()) {
-		DrawBox(x, y, x + 16, (max + 1) * 16 + y, back_color, TRUE);
-		DrawBox(x, cur * 16 + y, x + 16, (cur + 1) * 16 + y, cursole_color, TRUE);
-		ScreenFlip();
+	while (is_normal_state = normal_con_f() && update() && !decide()) {
 		if (up() && cur != 0) cur--;
 		if (down() && cur != max) cur++;
-		if (decide()) break;
-		Sleep(20);
+		DrawBox(x, y, x + 16, (max + 1) * 16 + y, back_color, TRUE);
+		DrawBox(x, cur * 16 + y, x + 16, (cur + 1) * 16 + y, cursole_color, TRUE);
+		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 	if (!is_normal_state) throw std::runtime_error("");
 	cursole_point = cur;
 }
 
-void cursole(cint max, cint x, cint y, int &cursole_point, uint cursole_color, uint back_color) {
-	int cur = 0;
-	auto normal_con_f = []() ->bool { return -1 != ProcessMessage(); };
-	volatile bool is_normal_state;
-	while (is_normal_state = normal_con_f()) {
-		DrawBox(x, y, x + 16, (max + 1) * 16 + y, back_color, TRUE);
-		DrawBox(x, cur * 16 + y, x + 16, (cur + 1) * 16 + y, cursole_color, TRUE);
-		ScreenFlip();
-		while (ProcessMessage() == 0 && CheckHitKeyAll() != 0) {}
-		while (ProcessMessage() == 0 && CheckHitKeyAll() == 0) {}
-		if (CheckHitKey(KEY_INPUT_W) == 1 && cur != 0) cur--;
-		if (CheckHitKey(KEY_INPUT_S) == 1 && cur != max) cur++;
-		if (CheckHitKey(KEY_INPUT_SPACE) == 1) break;
-	}
-	if (!is_normal_state) throw std::runtime_error("");
-	cursole_point = cur;
-}
