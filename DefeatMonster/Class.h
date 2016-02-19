@@ -147,7 +147,7 @@ private:
 		this->magic_sound_handle = magic_sound_handle;
 	}
 	std::vector<TURN> turn_arr;
-	int battle_main(StatusDataList &sta, COORDINATE Status_graph);
+	int battle_main(StatusDataList &sta, COORDINATE Status_graph, dxle::screen& backup_screen);
 };
 
 class KeyState {

@@ -10,7 +10,7 @@ int end_check(StatusDataList sta) {
 }
 
 void command_message(bool print_in_kanji) {
-	fill_background_color();
+	//fill_background_color();
 	DrawBox(1, window_height - 82, 135, window_height - 14, GetColor(128, 128, 128), TRUE);
 	DrawBox(1, window_height - 82, 135, window_height - 14, GetColor(255, 255, 255), FALSE);
 	DrawString(32, window_height - 80, print_in_kanji ? "UŒ‚" : "‚±‚¤‚°‚«", GetColor(0, 0, 0));
@@ -19,18 +19,12 @@ void command_message(bool print_in_kanji) {
 	DrawString(32, window_height - 32, "ƒPƒAƒ‹ƒŠƒ“ƒO", GetColor(0, 0, 0));
 }
 
-int choose_command(bool print_in_kanji) {
-	auto screen = dxle::screen::MakeScreen(window_width, window_height);
-	screen.drawn_on([print_in_kanji]() { 
-		//‚¤‚Ü‚­‚¢‚©‚È‚¢
-		//int tmp = DxLib::MakeScreen(window_width, window_height);
-		//DxLib::BltDrawValidGraph(DX_SCREEN_FRONT, 0, 0, window_width, window_height, 0, 0, tmp);
-		//DxLib::DrawGraph(0, 0, tmp, false);
-		//DxLib::DeleteGraph(tmp);
+int choose_command(bool print_in_kanji, dxle::screen& backup_screen) {
+	backup_screen.drawn_on([print_in_kanji]() {
 		command_message(print_in_kanji); 
 	});
 	KeyState key;
-	return key.cursole(screen, 3, 10, window_height - 80, GetColor(255, 255, 0), GetColor(128, 128, 128));
+	return key.cursole(backup_screen, 4, 10, window_height - 80, GetColor(255, 255, 0), GetColor(128, 128, 128));
 }
 
 static void safe_degree(int& re, int target) {
@@ -160,7 +154,7 @@ void Battle::player_turn_command(StatusDataList &sta, Damage player_damage, COOR
 	}
 }
 
-int Battle::battle_main(StatusDataList &sta, COORDINATE Status_graph) {
+int Battle::battle_main(StatusDataList &sta, COORDINATE Status_graph, dxle::screen& backup_screen) {
 	COORDINATE message_window = { message_window_x ,message_window_y, GetColor(255, 255, 255) };
 	this->partner1_strategy = partner2_strategy = strategy_type::balance;
 	if (turn == command) {
@@ -169,10 +163,11 @@ int Battle::battle_main(StatusDataList &sta, COORDINATE Status_graph) {
 		this->player_guard = false;
 	}
 	auto& mt = this->make_mt();
-	print_status(sta, Status_graph);
+	backup_screen.drawn_on([&sta, &Status_graph]() {print_status(sta, Status_graph); });
+	backup_screen.DrawGraph({}, false);
 	switch (turn) {
 		case command:
-			if(sta.player.hp != 0) this->command_cursole = choose_command(print_in_kanji);
+			if(sta.player.hp != 0) this->command_cursole = choose_command(print_in_kanji, backup_screen);
 			std::sort(this->turn_arr.begin(), this->turn_arr.end());
 			turn_arr.pop_back();
 			std::shuffle(this->turn_arr.begin(), this->turn_arr.end(), this->make_mt());

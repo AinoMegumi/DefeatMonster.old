@@ -43,14 +43,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		PlaySoundMem(MHandle.battle, DX_PLAYTYPE_LOOP);
 		while (ProcessMessage() != -1) {
 			ClearDrawScreen();
-			print_status(status, status_graph);
-			graph_enemy_and_background(
-				{
-					(static_cast<int>(window_width) - enemy_GSize.x) >> 1,
-					(static_cast<int>(window_height) - enemy_GSize.y) >> 1,
-					0
-				}, battle_bg_graph_handle, status.player.name, status.enemy);
-			battle_result = bat.battle_main(status, status_graph);
+			auto screen = dxle::screen::MakeScreen(window_width, window_height);
+			screen.drawn_on([&status_graph, enemy_GSize, battle_bg_graph_handle, &status]() {
+				print_status(status, status_graph);
+				graph_enemy_and_background(
+					{ (static_cast<int>(window_width) - enemy_GSize.x) / 2, (static_cast<int>(window_height) - enemy_GSize.y) / 2, 0 }, 
+					battle_bg_graph_handle, status.player.name, status.enemy
+				);
+			});
+			screen.DrawGraph({}, false);
+			battle_result = bat.battle_main(status, status_graph, screen);
 			ScreenFlip();
 			if (battle_result != 0) break;
 		}

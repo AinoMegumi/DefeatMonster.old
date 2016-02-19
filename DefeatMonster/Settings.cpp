@@ -93,7 +93,7 @@ void choose_partner_num(std::vector<status_data> arr, cint string_color, bool pr
 	auto screen = dxle::graph2d::MakeScreen(window_width, window_height);
 	screen.drawn_on([&arr, choosen_partner_num, print_in_kanji, string_color]() { print_partner_list(arr, choosen_partner_num, print_in_kanji, string_color); });
 	KeyState key;
-	const int choose_num = choosen_partner_num == -1 ? static_cast<int>(arr.size() - 1) : static_cast<int>(arr.size() - 2);
+	const int choose_num = choosen_partner_num == -1 ? static_cast<int>(arr.size()) : static_cast<int>(arr.size() - 1);
 	partner_num = key.cursole(screen, choose_num, 0, 16, GetColor(255, 255, 0), GetColor(160, 216, 239));
 }
 
